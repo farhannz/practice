@@ -5,32 +5,49 @@
 void create(FILE*fa,FILE*fp)
 {
   char username[255],password[32];
+  printf("===================== CREATE ====================\n");
   printf("Username : ");
   scanf(" %s",username);
-  printf("Password : ");
-  scanf(" %[^\n]s",password);
-  int size = strlen(password),key[255],adder[255];
-  char hashed[255];
-  int i,n,x;
-  int cases[2] = {97,65};
-  for(i = 0;i<size;i++)
+  int usrStat = 0;
+  char buffer[255];
+  while(fgets(buffer,255,fp) && usrStat == 0)
   {
-    n = rand()%1000+2;
-    x = rand()%2;
-    hashed[i] = (password[i] + n)%26+cases[x];
-    key[i] = n;
-    adder[i] = x;
+    if(strstr(buffer,username) !=NULL) usrStat = 1;
   }
-  fprintf(fp,"%s,%s\n",username,hashed);
-  for(i = 0;i<size;i++)
+  rewind(fp);
+  if(usrStat == 0)
   {
-    fprintf(fa,"%d,%d",key[i],adder[i]);
-    if(i<size-1)fprintf(fa,",");
+    printf("Password : ");
+    scanf(" %[^\n]s",password);
+    int size = strlen(password),key[255],adder[255];
+    char hashed[255];
+    int i,n,x;
+    int cases[2] = {97,65};
+    for(i = 0;i<size;i++)
+    {
+      n = rand()%1000+2;
+      x = rand()%2;
+      hashed[i] = (password[i] + n)%26+cases[x];
+      key[i] = n;
+      adder[i] = x;
+    }
+    fprintf(fp,"%s,%s\n",username,hashed);
+    for(i = 0;i<size;i++)
+    {
+      fprintf(fa,"%d,%d",key[i],adder[i]);
+      if(i<size-1)fprintf(fa,",");
+    }
+    fprintf(fa,"\n");
   }
-  fprintf(fa,"\n");
+  else
+  {
+    printf("Username has already been taken!\n");
+    rewind(fp);
+  }
 }
 void login(FILE*fa,FILE*fp,int * logIn)
 {
+  printf("===================== LOGIN ====================\n");
   char username[255],password[255],hashed[255],passInput[255],usrInput[255],buffer[510];
   printf("Username : ");
   scanf(" %s",usrInput);
@@ -120,6 +137,8 @@ void login(FILE*fa,FILE*fp,int * logIn)
   {
     printf("Username/Password is incorrect.\n");
   }
+  rewind(fp);
+  rewind(fa);
 }
 int main()
 {
@@ -137,7 +156,6 @@ int main()
     printf("0. Quit.\n");
     printf("Choose : ");
     scanf(" %c",&choose);
-    printf("===================================\n");
     switch (choose) {
       case '1':
         create(fa,fp);
